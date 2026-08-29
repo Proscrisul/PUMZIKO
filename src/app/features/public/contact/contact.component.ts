@@ -1,12 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { LucideDynamicIcon } from '@lucide/angular';
 import { catchError, of } from 'rxjs';
 
 import { ContactService } from '../../../core/services/contact.service';
 import { PeopleService } from '../../../core/services/people.service';
 import { SiteService } from '../../../core/services/site.service';
+import { VisitService } from '../../../core/services/visit.service';
 import { ContactMethod } from '../../../core/models/programme.model';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { connectPageMeta } from '../page-seo';
@@ -40,6 +42,9 @@ import { connectPageMeta } from '../page-seo';
     .two { display: grid; grid-template-columns: 140px 1fr; gap: 12px; }
     .done { color: var(--ember); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; }
     .err { color: var(--ember); font-size: 0.9rem; margin-top: 8px; }
+
+    .where address { font-style: normal; color: var(--ink-70); margin-top: 10px; }
+    .map { margin-top: 16px; width: 100%; max-width: 60ch; aspect-ratio: 16 / 9; border: 1px solid var(--hairline); border-radius: 2px; }
   `],
   template: `
     <header class="head">
@@ -117,12 +122,30 @@ import { connectPageMeta } from '../page-seo';
         }
       </div>
     </section>
+
+    @if (visit(); as v) {
+      <section class="section where" style="border-top:1px solid var(--hairline)">
+        <div class="wrap">
+          <p class="eyebrow">Where we meet</p>
+          @if (v.venue_confirmed && v.address) {
+            <address>{{ v.address }}</address>
+          } @else if (v.neighbourhood) {
+            <address>{{ v.neighbourhood }}</address>
+          }
+          @if (safeMap(); as mapUrl) {
+            <iframe class="map" [src]="mapUrl" title="Map to where we meet" loading="lazy"></iframe>
+          }
+        </div>
+      </section>
+    }
   `,
 })
 export class ContactComponent {
   private contactService = inject(ContactService);
   private peopleService = inject(PeopleService);
   private siteService = inject(SiteService);
+  private visitService = inject(VisitService);
+  private sanitizer = inject(DomSanitizer);
 
   readonly meta = connectPageMeta('contact', {
     title: 'Contact',
@@ -140,6 +163,16 @@ export class ContactComponent {
     this.siteService.settings().pipe(catchError(() => of(null))),
     { initialValue: null },
   );
+
+  readonly visit = toSignal(
+    this.visitService.info().pipe(catchError(() => of(null))),
+    { initialValue: null },
+  );
+
+  readonly safeMap = computed<SafeResourceUrl | null>(() => {
+    const url = this.visit()?.map_embed_url;
+    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null;
+  });
 
   readonly submitting = signal(false);
   readonly done = signal(false);

@@ -32,6 +32,15 @@ import { SaveBarComponent } from '../../../shared/admin/save-bar.component';
       <label><span class="admin-label">SWIFT</span><input class="input" formControlName="bank_swift" /></label>
 
       <hr class="hairline" />
+      <label class="admin-check">
+        <input type="checkbox" formControlName="mpesa_stk_enabled" />
+        Show a "give now by M-Pesa" form on the Give page
+      </label>
+      <p class="admin-help">
+        Needs the server-side M-Pesa credentials set too, or the button returns an error.
+      </p>
+
+      <hr class="hairline" />
       <label><span class="admin-label">Card link (for anyone abroad)</span>
         <input class="input" formControlName="card_url" placeholder="https://…" /></label>
       <label><span class="admin-label">Intro note</span>
@@ -51,6 +60,7 @@ export class GivingAdminComponent {
 
   form = this.fb.group({
     mpesa_paybill: [''], mpesa_account: [''], mpesa_till: [''],
+    mpesa_stk_enabled: [false],
     bank_name: [''], bank_account_name: [''], bank_account_number: [''],
     bank_branch: [''], bank_swift: [''],
     card_url: [''], intro_note: [''], visitors_note: [''],

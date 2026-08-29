@@ -1,14 +1,19 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { catchError, of, Subscription, switchMap, take, takeWhile, timer } from 'rxjs';
 
 import { GivingService } from '../../../core/services/giving.service';
+import { PaymentsService } from '../../../core/services/payments.service';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { connectPageMeta } from '../page-seo';
 
+type StkState = 'idle' | 'pushing' | 'waiting' | 'success' | 'failed' | 'timeout';
+
 @Component({
   selector: 'app-give',
-  imports: [RestBarComponent],
+  imports: [FormsModule, LucideDynamicIcon, RestBarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host { display: block; }
@@ -29,6 +34,18 @@ import { connectPageMeta } from '../page-seo';
     dl { display: grid; grid-template-columns: 150px 1fr; gap: 10px 20px; margin: 0; }
     dt { color: var(--ink-55); font-size: 0.9rem; }
     dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+    .stk { max-width: 56ch; margin-top: 24px; padding: 22px; border: 1px solid var(--ember); border-radius: 2px; }
+    .stk h2 { font-size: 1.3rem; margin-bottom: 6px; }
+    .stk p.lead { color: var(--ink-70); margin-bottom: 16px; }
+    .stk form { display: grid; gap: 14px; }
+    .stk .two { display: grid; grid-template-columns: 1fr 140px; gap: 12px; }
+    .stk .status { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+    .stk .status.ok { color: var(--ember); }
+    .stk .status.bad { color: var(--ember); }
+    .stk .spin { animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .stk .again { margin-top: 12px; }
   `],
   template: `
     <header class="head">
@@ -76,6 +93,61 @@ import { connectPageMeta } from '../page-seo';
               </div>
             }
           </div>
+
+          @if (g.mpesa_stk_enabled) {
+            <div class="stk">
+              <h2>Give now by M-Pesa</h2>
+              <p class="lead">Enter your number and an amount. You will get a prompt on your phone.</p>
+
+              @switch (state()) {
+                @case ('waiting') {
+                  <p class="status ok">
+                    <svg lucideIcon="loader-circle" [size]="18" class="spin"></svg>
+                    Check your phone and enter your M-Pesa PIN…
+                  </p>
+                }
+                @case ('success') {
+                  <p class="status ok">
+                    <svg lucideIcon="circle-check" [size]="18"></svg>
+                    Thank you. @if (receipt()) { Receipt {{ receipt() }}. }
+                  </p>
+                }
+                @case ('failed') {
+                  <p class="status bad">{{ errorText() || 'That didn’t go through.' }}</p>
+                  <button class="btn-ghost btn again" (click)="reset()">Try again</button>
+                }
+                @case ('timeout') {
+                  <p class="status bad">We didn’t get a confirmation. If your money left, message us and we’ll check.</p>
+                  <button class="btn-ghost btn again" (click)="reset()">Try again</button>
+                }
+                @default {
+                  <form (ngSubmit)="pay()">
+                    <label class="field">
+                      <span>Your name (optional)</span>
+                      <input class="input" name="name" [(ngModel)]="name" />
+                    </label>
+                    <div class="two">
+                      <label class="field">
+                        <span>Phone number</span>
+                        <input class="input" name="phone" inputmode="tel"
+                               [(ngModel)]="phone" placeholder="07…" required />
+                      </label>
+                      <label class="field">
+                        <span>Amount (KES)</span>
+                        <input class="input" name="amount" type="number" min="1"
+                               [(ngModel)]="amount" required />
+                      </label>
+                    </div>
+                    <button class="btn" type="submit"
+                            [disabled]="state() === 'pushing' || !phone.trim() || !amount">
+                      {{ state() === 'pushing' ? 'Sending…' : 'Send M-Pesa request' }}
+                    </button>
+                    @if (errorText()) { <p class="status bad">{{ errorText() }}</p> }
+                  </form>
+                }
+              }
+            </div>
+          }
         }
       </div>
     </section>
@@ -83,6 +155,7 @@ import { connectPageMeta } from '../page-seo';
 })
 export class GiveComponent {
   private givingService = inject(GivingService);
+  private payments = inject(PaymentsService);
 
   readonly meta = connectPageMeta('give', {
     title: 'Give',
@@ -96,4 +169,71 @@ export class GiveComponent {
     this.givingService.info().pipe(catchError(() => of(null))),
     { initialValue: null },
   );
+
+  name = '';
+  phone = '07';
+  amount: number | null = null;
+
+  readonly state = signal<StkState>('idle');
+  readonly receipt = signal('');
+  readonly errorText = signal('');
+
+  private poll?: Subscription;
+
+  pay(): void {
+    if (!this.phone.trim() || !this.amount) return;
+    this.state.set('pushing');
+    this.errorText.set('');
+    this.payments.stkPush({
+      phone_number: this.phone.trim(),
+      amount: this.amount,
+      name: this.name.trim() || undefined,
+    }).subscribe({
+      next: res => this.startPolling(res.checkout_request_id),
+      error: err => {
+        this.state.set('idle');
+        const detail = err?.error?.detail || err?.error?.phone_number?.[0] || err?.error?.amount?.[0];
+        this.errorText.set(
+          detail || 'Could not start the M-Pesa request. Try again in a moment.',
+        );
+      },
+    });
+  }
+
+  private startPolling(checkoutId: string): void {
+    this.state.set('waiting');
+    this.poll?.unsubscribe();
+    this.poll = timer(2500, 3000)
+      .pipe(
+        take(25),
+        switchMap(() => this.payments.status(checkoutId).pipe(catchError(() => of(null)))),
+        takeWhile(s => !s || s.status === 'Pending', true),
+      )
+      .subscribe({
+        next: s => {
+          if (!s) return;
+          if (s.status === 'Success') {
+            this.receipt.set(s.mpesa_receipt);
+            this.state.set('success');
+          } else if (s.status === 'Failed') {
+            this.errorText.set(s.result_desc || '');
+            this.state.set('failed');
+          } else if (s.status === 'Timeout') {
+            this.state.set('timeout');
+          }
+        },
+        complete: () => {
+          if (this.state() === 'waiting') this.state.set('timeout');
+        },
+      });
+  }
+
+  reset(): void {
+    this.poll?.unsubscribe();
+    this.state.set('idle');
+    this.receipt.set('');
+    this.errorText.set('');
+    this.name = '';
+    this.amount = null;
+  }
 }

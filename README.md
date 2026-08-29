@@ -43,7 +43,7 @@ server will render for — add the real domain before deploying.
 | Programmes | `/programmes` | the five planned programmes, all future tense; each has a "tell me when this starts" form posting to one list; Sabbath Sofa links out |
 | Why "Sinners Only" | `/sinners-only` | renders the CMS page's sections verbatim |
 | Visit | `/visit` | shows only the neighbourhood + "message us" until the venue is confirmed in the admin; then address, matatu, floor, entrance photo, map |
-| Give | `/give` | M-Pesa / bank / card, with "Visitors are not expected to give anything, ever." as the headline. Display only — no payment flow |
+| Give | `/give` | M-Pesa / bank / card, "Visitors are not expected to give anything, ever." as the headline. When `giving.mpesa_stk_enabled` is on, also a "give now by M-Pesa" form: `PaymentsService.stkPush()` then poll `PaymentsService.status(cid)` every 3 s until Success / Failed / Timeout |
 | Contact | `/contact` | WhatsApp first and largest, then email, then a short form; Steve & Vili's faces and the "We reply within a day" promise |
 
 The **page set and the navigation are fixed in the frontend** — the routes in
