@@ -110,3 +110,17 @@ group) or `createsuperuser`.
 - No web font is downloaded for body copy — the system stack resolves to Roboto
   on the Android phones this audience carries.
 - `npm test` runs the Vitest unit tests.
+
+## CI / deploy
+
+`.github/workflows/ci.yml` runs `npm ci`, `npm run build` and the unit tests on
+every push / PR.
+
+`.github/workflows/deploy.yml` builds the SSR bundle in CI and ships it to a
+cPanel Node.js (Passenger) app on push to `main`: `scp` `dist/**` +
+`package*.json` + `serverForHosting.mjs` into `APP_DIR`, then `npm ci --omit=dev`
+and `touch tmp/restart.txt`. `serverForHosting.mjs` is the fixed Passenger entry
+file — a thin Express wrapper around `dist/PumzikoFE/server/server.mjs`. Set the
+cPanel app's **Application startup file** to it, edit `APP_DIR` / `NODE_VENV` in
+the workflow, add the `SSH_*` secrets, and set the `API_URL` / `SITE_URL` repo
+variables so the bundle is built against the real API.
