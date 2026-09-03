@@ -5,7 +5,7 @@ name: Build & Deploy SSR Frontend to cPanel (Node/Passenger)
 #
 # ── Before this workflow can succeed ──────────────────────────────────────
 # One-time cPanel setup (cPanel > Setup Node.js App):
-#   - Node.js version:          22.x  (match NODE_VENV path below)
+#   - Node.js version:          24.x  (match NODE_VENV path below)
 #   - Application root:         the path in APP_DIR below
 #   - Application URL:          pumziko.org (once the domain is live)
 #   - Application startup file: serverForHosting.mjs
@@ -41,8 +41,8 @@ jobs:
     # Non-sensitive deployment paths. Must match the cPanel Node.js App
     # "Application root" and its node virtualenv path exactly.
     env:
-      APP_DIR: /home/<cpuser>/pumziko.org
-      NODE_VENV: /home/<cpuser>/nodevenv/pumziko.org/22/bin
+      APP_DIR: /home/htobgkjd/pumziko.org
+      NODE_VENV: /home/htobgkjd/nodevenv/pumziko.org/24/bin
     steps:
       - name: Get latest code
         uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
 
       - name: Point the build at the production API
