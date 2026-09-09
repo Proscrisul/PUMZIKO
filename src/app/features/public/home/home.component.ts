@@ -10,6 +10,7 @@ import { ContentService } from '../../../core/services/content.service';
 import { WordmarkComponent } from '../../../shared/components/wordmark/wordmark.component';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { SectionBlockComponent } from '../../../shared/components/section-block/section-block.component';
+import { CountdownComponent } from '../../../shared/components/countdown/countdown.component';
 import { gatheringLine, longDate } from '../../../core/utils/format';
 import { connectPageMeta } from '../page-seo';
 
@@ -17,6 +18,7 @@ import { connectPageMeta } from '../page-seo';
   selector: 'app-home',
   imports: [
     RouterLink, LucideDynamicIcon, WordmarkComponent, RestBarComponent, SectionBlockComponent,
+    CountdownComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
@@ -29,6 +31,9 @@ import { connectPageMeta } from '../page-seo';
       text-align: center; padding: 48px 24px 64px; gap: 22px;
     }
     .hero app-rest-bar { max-width: 320px; }
+    /* The wordmark is set in px on its host; clamp it here so PUMZIKO never
+       overruns a narrow phone (it is white-space:nowrap). */
+    .hero app-wordmark { font-size: clamp(3.1rem, 13vw, 6rem) !important; }
     .tagline {
       font-family: var(--font-display); font-size: clamp(1.1rem, 4vw, 1.6rem);
       letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-70);
@@ -36,7 +41,25 @@ import { connectPageMeta } from '../page-seo';
     .facts { font-size: 1.05rem; color: var(--ink); }
     .facts strong { font-weight: 700; }
 
+    /* Hero call-to-action stack: the one button, then the "why" link. */
+    .hero-cta { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .why-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--ember); font-weight: 600; font-size: 1rem;
+      text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px;
+    }
+    .why-link svg { transition: transform 0.15s ease; }
+    .why-link:hover svg { transform: translateX(3px); }
+
     .band { border-top: 1px solid var(--hairline); }
+
+    /* Countdown to launch */
+    .countdown-band .wrap { text-align: center; }
+    .countdown-band .cd-date {
+      font-family: var(--font-display); font-size: clamp(1.3rem, 4vw, 2rem);
+      margin: 8px 0 22px;
+    }
+    .countdown-band app-countdown { --cd-justify: center; }
 
     .saturday { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .part {
@@ -65,10 +88,25 @@ import { connectPageMeta } from '../page-seo';
         <strong>{{ gathering() }}</strong><br />
         {{ site()?.neighbourhood_label || 'Kilimani, Nairobi' }}
       </p>
-      <a routerLink="/what-to-expect" class="btn">
-        What happens on a Saturday
-        <svg lucideIcon="arrow-right" [size]="18"></svg>
-      </a>
+      <div class="hero-cta">
+        <a routerLink="/what-to-expect" class="btn">
+          What happens on a Saturday
+          <svg lucideIcon="arrow-right" [size]="18"></svg>
+        </a>
+        <a routerLink="/sinners-only" class="why-link">
+          Why “Sinners Only”?
+          <svg lucideIcon="arrow-right" [size]="15"></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Counting down to launch ── -->
+    <section class="section band countdown-band">
+      <div class="wrap">
+        <p class="eyebrow">Counting down to the first gathering</p>
+        <p class="cd-date">Saturday 3 October 2026 · 10:00</p>
+        <app-countdown />
+      </div>
     </section>
 
     <!-- ── Who this is for ── -->

@@ -31,20 +31,32 @@ import { connectPageMeta } from '../page-seo';
     .promise { color: var(--ink-55); }
     .email a { color: var(--ember); font-weight: 600; }
 
-    .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 12px; }
-    .person { display: flex; gap: 14px; align-items: flex-start; }
-    .person img { width: 64px; height: 64px; object-fit: cover; border-radius: 2px; flex-shrink: 0; }
+    .people {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 32px; margin-top: 16px; justify-items: center;
+    }
+    .person { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; max-width: 320px; }
+    /* Round, and ~2× the previous size so faces read clearly. */
+    .person img {
+      width: 176px; height: 176px; object-fit: cover;
+      border-radius: 50%; flex-shrink: 0;
+      border: 1px solid var(--hairline);
+    }
     .person .name { font-weight: 700; }
     .person .role { color: var(--ink-55); font-size: 0.9rem; }
     .person .bio { color: var(--ink-70); font-size: 0.92rem; margin-top: 6px; }
 
-    form { max-width: 480px; margin-top: 12px; }
+    form { max-width: 480px; margin: 12px auto 0; }
     .two { display: grid; grid-template-columns: 140px 1fr; gap: 12px; }
     .done { color: var(--ember); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; }
     .err { color: var(--ember); font-size: 0.9rem; margin-top: 8px; }
 
     .where address { font-style: normal; color: var(--ink-70); margin-top: 10px; }
-    .map { margin-top: 16px; width: 100%; max-width: 60ch; aspect-ratio: 16 / 9; border: 1px solid var(--hairline); border-radius: 2px; }
+    .map { display: block; margin: 16px auto 0; width: 100%; max-width: 60ch; aspect-ratio: 16 / 9; border: 1px solid var(--hairline); border-radius: 2px; }
+
+    @media (max-width: 420px) {
+      .two { grid-template-columns: 1fr; }
+    }
   `],
   template: `
     <header class="head">

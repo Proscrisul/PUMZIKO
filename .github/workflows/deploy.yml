@@ -63,6 +63,7 @@ jobs:
             appName: 'Pumziko',
             siteUrl: '${{ vars.SITE_URL || 'https://pumziko.org' }}',
             version: '1.0.0',
+            whatsappNumber: '${{ vars.WHATSAPP_NUMBER }}',
           };
           EOF
 

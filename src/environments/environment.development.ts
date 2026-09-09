@@ -4,4 +4,5 @@ export const environment = {
   appName: 'Pumziko',
   siteUrl: 'http://localhost:4200',
   version: '1.0.0',
+  whatsappNumber: '',
 };

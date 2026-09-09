@@ -15,13 +15,16 @@ import { connectPageMeta } from '../page-seo';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host { display: block; }
+    /* Tighter block padding so a short page doesn't leave a void above the footer. */
+    .section { padding-block: clamp(40px, 6vw, 72px); }
     .head { padding: 56px 24px 8px; text-align: center; }
     .head h1 { font-size: clamp(2.2rem, 7vw, 4rem); }
     .head app-rest-bar { max-width: 300px; margin: 22px auto 0; }
 
+    /* Centre every content block so wide screens don't leave it hugging the left. */
     .card {
       border: 1px solid var(--hairline); border-radius: 2px; padding: 24px;
-      max-width: 60ch;
+      max-width: 60ch; margin-inline: auto;
     }
     .pending { border-color: var(--ember); }
     .pending p { color: var(--ink-70); }
@@ -30,13 +33,13 @@ import { connectPageMeta } from '../page-seo';
     dt { color: var(--ink-55); font-size: 0.9rem; }
     dd { margin: 0; }
 
-    .photo { margin-top: 24px; max-width: 100%; border: 1px solid var(--hairline); }
-    .map { margin-top: 24px; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+    .photo { display: block; margin: 24px auto 0; max-width: 60ch; width: 100%; border: 1px solid var(--hairline); }
+    .map { display: block; margin: 24px auto 0; width: 100%; max-width: 60ch; aspect-ratio: 16 / 9; border: 0; }
 
-    .first { margin-top: 40px; max-width: 60ch; }
+    .first { margin: 40px auto 0; max-width: 60ch; }
     .first h2 { font-size: 1.5rem; margin-bottom: 10px; }
     .first p { color: var(--ink-70); }
-    .not-signed { margin-top: 16px; color: var(--ink-55); font-size: 0.95rem; }
+    .not-signed { margin: 16px auto 0; max-width: 60ch; color: var(--ink-55); font-size: 0.95rem; }
   `],
   template: `
     <header class="head">

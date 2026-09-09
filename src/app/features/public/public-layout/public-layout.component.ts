@@ -8,8 +8,10 @@ import { SiteService } from '../../../core/services/site.service';
 import { WordmarkComponent } from '../../../shared/components/wordmark/wordmark.component';
 import { BrandIconComponent } from '../../../shared/components/brand-icon/brand-icon.component';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
+import { CountdownComponent } from '../../../shared/components/countdown/countdown.component';
 import { WhatsappButtonComponent } from '../../../shared/components/whatsapp-button/whatsapp-button.component';
 import { gatheringLine } from '../../../core/utils/format';
+import { environment } from '../../../../environments/environment';
 
 // The site's pages. Fixed — not fetched.
 const NAV_LINKS = [
@@ -25,7 +27,8 @@ const NAV_LINKS = [
   selector: 'app-public-layout',
   imports: [
     RouterOutlet, RouterLink, RouterLinkActive, LucideDynamicIcon,
-    WordmarkComponent, BrandIconComponent, RestBarComponent, WhatsappButtonComponent,
+    WordmarkComponent, BrandIconComponent, RestBarComponent, CountdownComponent,
+    WhatsappButtonComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
@@ -97,6 +100,13 @@ const NAV_LINKS = [
     }
     .foot app-rest-bar { margin-bottom: 40px; }
     .foot-brand { display: inline-flex; align-items: center; gap: 12px; }
+    .foot-countdown { margin-bottom: 44px; text-align: center; }
+    .foot-countdown .label {
+      font-family: var(--font-body); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--bone-70); margin-bottom: 14px;
+    }
+    .foot-countdown app-countdown { --cd-justify: center; }
     .foot-grid {
       display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px;
     }
@@ -166,6 +176,11 @@ const NAV_LINKS = [
       <div class="foot">
         <app-rest-bar ground="ink" />
 
+        <div class="foot-countdown">
+          <p class="label">First gathering — Saturday 3 October 2026</p>
+          <app-countdown ground="ink" />
+        </div>
+
         <div class="foot-grid">
           <div>
             <span class="foot-brand">
@@ -210,13 +225,19 @@ const NAV_LINKS = [
       </div>
     </footer>
 
-    <app-whatsapp-button [number]="site()?.whatsapp_number || ''" />
+    <app-whatsapp-button [number]="whatsappNumber()" />
   `,
 })
 export class PublicLayoutComponent {
   private siteService = inject(SiteService);
 
   readonly navLinks = NAV_LINKS;
+
+  /** CMS number if set, otherwise the build-time fallback so the floating
+   *  button is present on every page. Set environment.whatsappNumber (or the
+   *  WhatsApp number in admin > Site settings) for it to activate. */
+  readonly whatsappNumber = () =>
+    this.site()?.whatsapp_number || environment.whatsappNumber || '';
   readonly year = new Date().getFullYear();
   readonly menuOpen = signal(false);
 

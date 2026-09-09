@@ -17,6 +17,8 @@ type StkState = 'idle' | 'pushing' | 'waiting' | 'success' | 'failed' | 'timeout
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host { display: block; }
+    /* Tighter block padding so a short page doesn't leave a void above the footer. */
+    .section { padding-block: clamp(40px, 6vw, 72px); }
     .head { padding: 56px 24px 8px; text-align: center; }
     .head h1 { font-size: clamp(2.2rem, 7vw, 4rem); }
     .head app-rest-bar { max-width: 300px; margin: 22px auto 0; }
@@ -26,16 +28,18 @@ type StkState = 'idle' | 'pushing' | 'waiting' | 'success' | 'failed' | 'timeout
       font-family: var(--font-display); font-size: clamp(1.3rem, 4vw, 1.9rem);
       color: var(--ember); line-height: 1.15;
     }
-    .intro { max-width: 56ch; color: var(--ink-70); margin-top: 28px; }
+    /* Centre the reading column so wide screens don't leave it hugging the left. */
+    .intro { max-width: 56ch; color: var(--ink-70); margin: 28px auto 0; }
+    .methods { margin: 28px auto 0; max-width: 56ch; }
 
-    .method { padding: 24px 0; border-bottom: 1px solid var(--hairline); max-width: 56ch; }
+    .method { padding: 24px 0; border-bottom: 1px solid var(--hairline); }
     .method:last-child { border-bottom: 0; }
     .method h2 { font-size: 1.4rem; margin-bottom: 12px; }
     dl { display: grid; grid-template-columns: 150px 1fr; gap: 10px 20px; margin: 0; }
     dt { color: var(--ink-55); font-size: 0.9rem; }
     dd { margin: 0; font-variant-numeric: tabular-nums; }
 
-    .stk { max-width: 56ch; margin-top: 24px; padding: 22px; border: 1px solid var(--ember); border-radius: 2px; }
+    .stk { max-width: 56ch; margin: 24px auto 0; padding: 22px; border: 1px solid var(--ember); border-radius: 2px; }
     .stk h2 { font-size: 1.3rem; margin-bottom: 6px; }
     .stk p.lead { color: var(--ink-70); margin-bottom: 16px; }
     .stk form { display: grid; gap: 14px; }
@@ -61,7 +65,7 @@ type StkState = 'idle' | 'pushing' | 'waiting' | 'success' | 'failed' | 'timeout
         @if (giving(); as g) {
           @if (g.intro_note) { <p class="intro">{{ g.intro_note }}</p> }
 
-          <div style="margin-top:28px">
+          <div class="methods">
             @if (g.mpesa_paybill || g.mpesa_till) {
               <div class="method">
                 <h2>M-Pesa</h2>
