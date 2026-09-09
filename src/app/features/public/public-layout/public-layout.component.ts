@@ -157,6 +157,11 @@ const NAV_LINKS = [
       <router-outlet />
     </main>
 
+    <section class="partner">
+      <p class="label">Broadcasting partner</p>
+      <img src="BetterLifebanner.png" alt="Better Life TV" width="1290" height="244" />
+    </section>
+
     <footer>
       <div class="foot">
         <app-rest-bar ground="ink" />
