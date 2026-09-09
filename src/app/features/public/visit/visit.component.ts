@@ -8,6 +8,7 @@ import { VisitService } from '../../../core/services/visit.service';
 import { SiteService } from '../../../core/services/site.service';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { connectPageMeta } from '../page-seo';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-visit',
@@ -123,7 +124,8 @@ export class VisitComponent {
   });
 
   readonly whatsappHref = () => {
-    const digits = (this.site()?.whatsapp_number ?? '').replace(/[^\d]/g, '');
+    const raw = this.site()?.whatsapp_number || environment.whatsappNumber || '';
+    const digits = raw.replace(/[^\d]/g, '');
     return digits
       ? `https://wa.me/${digits}?text=${encodeURIComponent('Hi Pumziko — please send me the location and a photo of the door.')}`
       : null;

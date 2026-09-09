@@ -8,6 +8,7 @@ import { ExpectationsService } from '../../../core/services/expectations.service
 import { SiteService } from '../../../core/services/site.service';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { connectPageMeta } from '../page-seo';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-what-to-expect',
@@ -134,7 +135,8 @@ export class WhatToExpectComponent {
   );
 
   readonly whatsappHref = () => {
-    const digits = (this.site()?.whatsapp_number ?? '').replace(/[^\d]/g, '');
+    const raw = this.site()?.whatsapp_number || environment.whatsappNumber || '';
+    const digits = raw.replace(/[^\d]/g, '');
     return digits
       ? `https://wa.me/${digits}?text=${encodeURIComponent('Hi Pumziko — a question before I come: ')}`
       : null;

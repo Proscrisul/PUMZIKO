@@ -12,6 +12,7 @@ import { VisitService } from '../../../core/services/visit.service';
 import { ContactMethod } from '../../../core/models/programme.model';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { connectPageMeta } from '../page-seo';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-contact',
@@ -46,7 +47,19 @@ import { connectPageMeta } from '../page-seo';
     .person .role { color: var(--ink-55); font-size: 0.9rem; }
     .person .bio { color: var(--ink-70); font-size: 0.92rem; margin-top: 6px; }
 
-    form { max-width: 480px; margin: 12px auto 0; }
+    /* Send section: WhatsApp is the primary action, the form is secondary. */
+    .send { text-align: center; }
+    .wa-primary { font-size: 1.15rem; padding: 18px 30px; margin: 16px auto 8px; }
+    .send .promise { color: var(--ink-55); }
+    .secondary {
+      max-width: 480px; margin: 34px auto 0; padding-top: 28px;
+      border-top: 1px solid var(--hairline); text-align: left;
+    }
+    .secondary-label {
+      text-align: center; color: var(--ink-55); font-size: 0.95rem; margin-bottom: 18px;
+    }
+
+    form { max-width: 480px; margin: 0 auto; }
     .two { display: grid; grid-template-columns: 140px 1fr; gap: 12px; }
     .done { color: var(--ember); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; }
     .err { color: var(--ember); font-size: 0.9rem; margin-top: 8px; }
@@ -64,13 +77,10 @@ import { connectPageMeta } from '../page-seo';
       <app-rest-bar />
 
       <div class="primary">
-        @if (whatsappHref(); as url) {
-          <a [href]="url" target="_blank" rel="noopener" class="btn">
-            <svg lucideIcon="message-circle" [size]="20"></svg>
-            Message us on WhatsApp
-          </a>
-        }
-        <p class="promise">{{ site()?.reply_promise || 'We reply within a day.' }}</p>
+        <p class="promise">
+          The fastest way to reach us is WhatsApp.
+          {{ site()?.reply_promise || 'We reply within a day.' }}
+        </p>
         @if (site()?.contact_email; as email) {
           <p class="email">or email <a [href]="'mailto:' + email">{{ email }}</a></p>
         }
@@ -96,8 +106,19 @@ import { connectPageMeta } from '../page-seo';
     </section>
 
     <section class="section" style="border-top:1px solid var(--hairline)">
-      <div class="wrap">
-        <p class="eyebrow">Or leave a message</p>
+      <div class="wrap send">
+        <p class="eyebrow">Send us a message</p>
+
+        @if (whatsappHref(); as url) {
+          <a [href]="url" target="_blank" rel="noopener" class="btn wa-primary">
+            <svg lucideIcon="message-circle" [size]="20"></svg>
+            Message us on WhatsApp
+          </a>
+          <p class="promise">{{ site()?.reply_promise || 'We reply within a day.' }}</p>
+        }
+
+        <div class="secondary">
+          <p class="secondary-label">Prefer to type it out? Leave a message and we’ll come back to you.</p>
         @if (done()) {
           <p class="done">
             <svg lucideIcon="circle-check" [size]="18"></svg>
@@ -132,6 +153,7 @@ import { connectPageMeta } from '../page-seo';
             @if (error()) { <p class="err">That didn’t send. Try WhatsApp instead.</p> }
           </form>
         }
+        </div>
       </div>
     </section>
 
@@ -198,7 +220,8 @@ export class ContactComponent {
   };
 
   readonly whatsappHref = () => {
-    const digits = (this.site()?.whatsapp_number ?? '').replace(/[^\d]/g, '');
+    const raw = this.site()?.whatsapp_number || environment.whatsappNumber || '';
+    const digits = raw.replace(/[^\d]/g, '');
     return digits
       ? `https://wa.me/${digits}?text=${encodeURIComponent('Hi Pumziko — ')}`
       : null;
