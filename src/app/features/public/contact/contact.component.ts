@@ -33,13 +33,13 @@ import { environment } from '../../../../environments/environment';
     .email a { color: var(--ember); font-weight: 600; }
 
     .people {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 32px; margin-top: 16px; justify-items: center;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px; margin-top: 16px; justify-items: center;
     }
-    .person { display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; max-width: 320px; }
-    /* Round, and ~2× the previous size so faces read clearly. */
+    .person { display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; max-width: 360px; }
+    /* Round, and ~3× the original 64px (increased by 200%) so faces read clearly. */
     .person img {
-      width: 176px; height: 176px; object-fit: cover;
+      width: clamp(180px, 44vw, 220px); height: clamp(180px, 44vw, 220px); object-fit: cover;
       border-radius: 50%; flex-shrink: 0;
       border: 1px solid var(--hairline);
     }

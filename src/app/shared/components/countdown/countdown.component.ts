@@ -24,22 +24,25 @@ import { isPlatformBrowser } from '@angular/common';
   styles: [`
     :host { display: block; }
     .cd {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      justify-content: var(--cd-justify, flex-start);
+      display: flex; gap: 8px;
+      /* Four units, one row, shrink-to-fit — never wider than the viewport. */
+      max-width: 340px;
+      margin-inline: var(--cd-mx, 0);
     }
     .unit {
+      flex: 1 1 0; min-width: 0;
       display: flex; flex-direction: column; align-items: center;
-      min-width: 64px; padding: 12px 14px;
+      padding: 12px 6px;
       border: 1px solid var(--hairline); border-radius: 2px;
     }
     .n {
       font-family: var(--font-display);
-      font-size: clamp(1.7rem, 6vw, 2.6rem); line-height: 1;
+      font-size: clamp(1.4rem, 7vw, 2.6rem); line-height: 1;
       font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
     }
     .l {
       margin-top: 6px;
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--ink-55);
     }
     .live {

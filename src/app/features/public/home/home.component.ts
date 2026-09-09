@@ -30,15 +30,17 @@ import { connectPageMeta } from '../page-seo';
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center; padding: 48px 24px 64px; gap: 22px;
     }
-    .hero app-rest-bar { max-width: 320px; }
+    .hero { max-width: 100%; }
+    .hero app-rest-bar { max-width: min(320px, 100%); }
     /* The wordmark is set in px on its host; clamp it here so PUMZIKO never
        overruns a narrow phone (it is white-space:nowrap). */
-    .hero app-wordmark { font-size: clamp(3.1rem, 13vw, 6rem) !important; }
+    .hero app-wordmark { font-size: clamp(2.6rem, 12vw, 6rem) !important; max-width: 100%; }
     .tagline {
-      font-family: var(--font-display); font-size: clamp(1.1rem, 4vw, 1.6rem);
-      letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-70);
+      font-family: var(--font-display); font-size: clamp(1.05rem, 4vw, 1.6rem);
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-70);
+      max-width: 100%; overflow-wrap: break-word;
     }
-    .facts { font-size: 1.05rem; color: var(--ink); }
+    .facts { font-size: 1.05rem; color: var(--ink); max-width: 100%; }
     .facts strong { font-weight: 700; }
 
     /* Hero call-to-action stack: the one button, then the "why" link. */
@@ -59,7 +61,7 @@ import { connectPageMeta } from '../page-seo';
       font-family: var(--font-display); font-size: clamp(1.3rem, 4vw, 2rem);
       margin: 8px 0 22px;
     }
-    .countdown-band app-countdown { --cd-justify: center; }
+    .countdown-band app-countdown { --cd-mx: auto; }
 
     .saturday { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
     .part {
@@ -75,8 +77,23 @@ import { connectPageMeta } from '../page-seo';
 
     .launch {
       display: flex; flex-direction: column; align-items: flex-start; gap: 16px;
+      max-width: 100%;
     }
-    .launch .when { font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.4rem); }
+    .launch .when {
+      font-family: var(--font-display); font-size: clamp(1.5rem, 5vw, 2.4rem);
+      max-width: 100%; overflow-wrap: break-word;
+    }
+
+    /* ── Phones: nothing clipped, everything stacks ── */
+    @media (max-width: 480px) {
+      .hero { padding: 40px 20px 52px; gap: 18px; }
+      .hero-cta { width: 100%; }
+      .hero-cta .btn { width: 100%; justify-content: center; text-align: center; }
+      .why-link { flex-wrap: wrap; justify-content: center; text-align: center; }
+      .saturday { gap: 8px; }
+      .part { font-size: 0.92rem; padding: 9px 12px; }
+      .headline-note { font-size: 0.95rem; }
+    }
   `],
   template: `
     <!-- ── Above the fold ── -->
@@ -122,7 +139,7 @@ import { connectPageMeta } from '../page-seo';
     <section class="section band">
       <div class="wrap">
         <p class="eyebrow">The shape of a Saturday</p>
-        <h2 style="font-size:clamp(1.7rem,4vw,2.6rem);margin-top:10px">
+        <h2 style="font-size:clamp(1.45rem,4vw,2.6rem);margin-top:10px">
           Arriving, singing, praying, learning, asking questions, eating, leaving.
         </h2>
         <div class="saturday">

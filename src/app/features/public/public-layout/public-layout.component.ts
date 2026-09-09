@@ -106,7 +106,7 @@ const NAV_LINKS = [
       letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--bone-70); margin-bottom: 14px;
     }
-    .foot-countdown app-countdown { --cd-justify: center; }
+    .foot-countdown app-countdown { --cd-mx: auto; }
     .foot-grid {
       display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px;
     }
