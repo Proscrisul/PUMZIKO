@@ -75,16 +75,22 @@ jobs:
       # Upload the build output, the runtime manifest, and the Passenger entry
       # wrapper. Passenger boots serverForHosting.mjs, which serves the static
       # assets and SSR via the handler exported by dist/PumzikoFE/server/server.mjs.
+      #
+      # Streamed as a tarball through the runner's native OpenSSH client rather
+      # than appleboy/scp-action: its Go SSH library trips over a packet cPanel's
+      # sshd sends when opening a second channel ("ssh: unexpected packet in
+      # response to channel open"). The native client opens one channel and works.
       - name: Upload build to cPanel (${{ env.APP_DIR }})
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "dist/**,package.json,package-lock.json,serverForHosting.mjs"
-          target: ${{ env.APP_DIR }}
-          overwrite: true
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          SSH="ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=yes"
+          tar czf - dist package.json package-lock.json serverForHosting.mjs \
+            | $SSH "${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}" \
+                "mkdir -p '${{ env.APP_DIR }}' && tar xzf - -C '${{ env.APP_DIR }}'"
 
       - name: Install production deps & restart Passenger
         uses: appleboy/ssh-action@v1.2.0
