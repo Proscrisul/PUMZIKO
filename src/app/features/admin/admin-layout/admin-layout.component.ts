@@ -4,6 +4,7 @@ import { LucideDynamicIcon } from '@lucide/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { WordmarkComponent } from '../../../shared/components/wordmark/wordmark.component';
+import { BrandIconComponent } from '../../../shared/components/brand-icon/brand-icon.component';
 import { AdminToastComponent } from '../../../shared/admin/toast.component';
 
 const NAV = [
@@ -25,7 +26,7 @@ const NAV = [
   selector: 'app-admin-layout',
   imports: [
     RouterOutlet, RouterLink, RouterLinkActive, LucideDynamicIcon,
-    WordmarkComponent, AdminToastComponent,
+    WordmarkComponent, BrandIconComponent, AdminToastComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
@@ -35,7 +36,7 @@ const NAV = [
       background: var(--ink); color: var(--bone);
       display: flex; flex-direction: column; padding: 20px 14px;
     }
-    .brand { padding: 4px 8px 20px; }
+    .brand { padding: 4px 8px 20px; display: flex; align-items: center; gap: 10px; }
     nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
     nav a {
       display: flex; align-items: center; gap: 10px;
@@ -69,7 +70,10 @@ const NAV = [
   `],
   template: `
     <aside>
-      <div class="brand"><app-wordmark [size]="34" ground="ink" /></div>
+      <div class="brand">
+        <app-brand-icon [size]="30" />
+        <app-wordmark [size]="34" ground="ink" />
+      </div>
       <nav>
         @for (item of nav; track item.path) {
           <a

@@ -1,0 +1,24 @@
+{
+  "name": "Pumziko",
+  "short_name": "Pumziko",
+  "description": "A church in Nairobi for people who feel excluded from church. Saturdays, 10:00–14:00, Kilimani.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#141210",
+  "theme_color": "#141210",
+  "icons": [
+    {
+      "src": "pumziko-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "pumziko-icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

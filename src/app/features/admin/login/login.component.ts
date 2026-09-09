@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { WordmarkComponent } from '../../../shared/components/wordmark/wordmark.component';
+import { BrandIconComponent } from '../../../shared/components/brand-icon/brand-icon.component';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 
 @Component({
   selector: 'app-admin-login',
-  imports: [FormsModule, WordmarkComponent, RestBarComponent],
+  imports: [FormsModule, WordmarkComponent, BrandIconComponent, RestBarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host {
@@ -16,12 +17,14 @@ import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.c
       min-height: 100vh; padding: 24px;
     }
     .box { width: 100%; max-width: 380px; text-align: center; }
+    .box app-brand-icon { display: block; margin: 0 auto 14px; }
     .box app-rest-bar { max-width: 220px; margin: 18px auto 28px; }
     form { text-align: left; display: grid; gap: 14px; }
     .err { color: var(--ember); font-size: 0.9rem; }
   `],
   template: `
     <div class="box">
+      <app-brand-icon [size]="56" />
       <app-wordmark [size]="56" />
       <app-rest-bar />
 

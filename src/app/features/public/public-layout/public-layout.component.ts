@@ -6,6 +6,7 @@ import { catchError, of } from 'rxjs';
 
 import { SiteService } from '../../../core/services/site.service';
 import { WordmarkComponent } from '../../../shared/components/wordmark/wordmark.component';
+import { BrandIconComponent } from '../../../shared/components/brand-icon/brand-icon.component';
 import { RestBarComponent } from '../../../shared/components/rest-bar/rest-bar.component';
 import { WhatsappButtonComponent } from '../../../shared/components/whatsapp-button/whatsapp-button.component';
 import { gatheringLine } from '../../../core/utils/format';
@@ -24,7 +25,7 @@ const NAV_LINKS = [
   selector: 'app-public-layout',
   imports: [
     RouterOutlet, RouterLink, RouterLinkActive, LucideDynamicIcon,
-    WordmarkComponent, RestBarComponent, WhatsappButtonComponent,
+    WordmarkComponent, BrandIconComponent, RestBarComponent, WhatsappButtonComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
@@ -42,7 +43,7 @@ const NAV_LINKS = [
       padding: 12px 24px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
-    .brand { display: inline-flex; align-items: center; text-decoration: none; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
     .links { display: flex; align-items: center; gap: 4px; }
     .links a {
       padding: 8px 12px; border-radius: 2px;
@@ -80,6 +81,7 @@ const NAV_LINKS = [
       max-width: var(--page-max); margin-inline: auto; padding: 64px 24px 40px;
     }
     .foot app-rest-bar { margin-bottom: 40px; }
+    .foot-brand { display: inline-flex; align-items: center; gap: 12px; }
     .foot-grid {
       display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px;
     }
@@ -103,6 +105,7 @@ const NAV_LINKS = [
     <header>
       <div class="nav">
         <a routerLink="/" class="brand" aria-label="Pumziko home">
+          <app-brand-icon [size]="30" />
           <app-wordmark [size]="30" />
         </a>
 
@@ -145,7 +148,10 @@ const NAV_LINKS = [
 
         <div class="foot-grid">
           <div>
-            <app-wordmark [size]="44" ground="ink" />
+            <span class="foot-brand">
+              <app-brand-icon [size]="40" />
+              <app-wordmark [size]="44" ground="ink" />
+            </span>
             <p class="muted" style="margin-top:16px;max-width:34ch">
               {{ site()?.tagline || 'Sinners Only' }}. A church in
               {{ site()?.neighbourhood_label || 'Nairobi' }}.
