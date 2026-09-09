@@ -75,6 +75,21 @@ const NAV_LINKS = [
 
     main { flex: 1; }
 
+    /* ── Broadcasting partner ── */
+    .partner {
+      border-top: 1px solid var(--hairline);
+      background: #fff;
+      padding: 30px 24px;
+      text-align: center;
+    }
+    .partner .label {
+      font-family: var(--font-body);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-55); margin-bottom: 14px;
+    }
+    .partner img { height: 52px; width: auto; max-width: 80%; display: inline-block; }
+    @media (max-width: 480px) { .partner img { height: 40px; } }
+
     /* ── Footer ── */
     footer { background: var(--ink); color: var(--bone); margin-top: auto; }
     .foot {
