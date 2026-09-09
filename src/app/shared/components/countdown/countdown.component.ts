@@ -17,6 +17,9 @@ import { isPlatformBrowser } from '@angular/common';
     '[class.on-ink]': "ground() === 'ink'",
     role: 'timer',
     'aria-label': 'Time until the first gathering',
+    // Live widget: its DOM diverges from the SSR frame within a second, so let
+    // the client re-render it rather than reconcile (avoids a hydration mismatch).
+    ngSkipHydration: 'true',
   },
   styles: [`
     :host { display: block; }
